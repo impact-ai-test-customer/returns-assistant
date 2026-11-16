@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": { "value": "chooseprefix" },
+    "location": { "value": "CHOOSE_SUPPORTED_REGION" },
+    "githubRepository": { "value": "CUSTOMER_OWNER/CUSTOMER_REPOSITORY" },
+    "modelName": { "value": "CHOOSE_MODEL_NAME" },
+    "modelVersion": { "value": "CHOOSE_EXACT_MODEL_VERSION" },
+    "modelDeployment": { "value": "customer-agent-model" },
+    "modelSku": { "value": "CHOOSE_MODEL_SKU" },
+    "modelCapacity": { "value": 1 },
+    "monthlyBudget": { "value": 100 },
+    "budgetStart": { "value": "CHOOSE_CURRENT_MONTH_FIRST_DAY_ISO8601" },
+    "budgetEnd": { "value": "CHOOSE_BUDGET_END_ISO8601" },
+    "budgetContactEmails": { "value": ["OWNER_BUDGET_CONTACT"] },
+    "searchSku": { "value": "basic" },
+    "cosmosServerless": { "value": true }
+  }
+}

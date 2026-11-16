@@ -1,0 +1,12 @@
+# Customer source documents and local upload/qualification state must never enter Git.
+knowledge-*.json
+qualification-input.txt
+qualification*.json
+receipt.json
+pin-output.txt
+out/
+bundle/
+infra/main.json
+infra/environment.json
+infra/owner.parameters.json
+owner-preflight*.json
