@@ -1,0 +1,91 @@
+name: Azure Development
+on:
+  push:
+    branches: [development]
+permissions:
+  contents: read
+concurrency:
+  group: azure-development
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-24.04
+    environment: Development
+    timeout-minutes: 15
+    env:
+      IMPACT_KNOWLEDGE_RECEIPT: ${{ vars.IMPACT_KNOWLEDGE_RECEIPT }}
+      IMPACT_REPLAY_CONTAINER_URL: ${{ vars.IMPACT_REPLAY_CONTAINER_URL }}
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26.10.0
+      # The runtime that serves real calls gets these two values from this GitHub environment (Development). This workflow's
+      # release step reads them too, and sends only the content-free check-run spans: what will run, each check's result and
+      # how the run ended. Without both, that run is not reported and the release page says so; the release itself goes on.
+      - name: Check the runtime observation setup
+        env:
+          IMPACT_OTLP_TRACES_ENDPOINT: ${{ vars.IMPACT_OTLP_TRACES_ENDPOINT }}
+        run: |
+          if [ -z "$IMPACT_OTLP_TRACES_ENDPOINT" ]; then
+            echo "::warning::Set IMPACT_OTLP_TRACES_ENDPOINT (variable) and IMPACT_PRODUCT_KEY (secret, not readable here) in the Development environment so the checks and the runtime can report to impact.ai."
+          fi
+      - name: Identify the preceding attempt
+        id: attempt
+        run: node scripts/phase.ts previous
+      - name: Recover the preceding attempt phase
+        if: github.run_attempt > 1
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: azure-development-attempt-${{ steps.attempt.outputs.previous }}
+          path: previous-phase
+          run-id: ${{ github.run_id }}
+          github-token: ${{ github.token }}
+      - name: Preserve a conservative phase before any provider authority
+        run: node scripts/phase.ts init
+      - name: Inspect the exact merged definition before obtaining Azure authority
+        run: node scripts/release.ts --environment development --action inspect
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy and verify one immutable version
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+          IMPACT_OTLP_TRACES_ENDPOINT: ${{ vars.IMPACT_OTLP_TRACES_ENDPOINT }}
+          IMPACT_PRODUCT_KEY: ${{ secrets.IMPACT_PRODUCT_KEY }}
+        run: |
+          mkdir -p out
+          node scripts/release.ts --environment development --source-commit "$SOURCE_COMMIT" --receipt out/receipt.json
+          cp -R agent out/agent
+      - name: Retain the verified source bundle for explicit promotion
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: azure-development-bundle
+          path: out/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Publish the content-free exact release confirmation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/confirm-release.ts
+      - name: Retain content-free attempt phase and check evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: azure-development-attempt-${{ github.run_attempt }}
+          path: |
+            out/phase.json
+            out/checks-evidence.json
+          retention-days: 90
+          if-no-files-found: warn
