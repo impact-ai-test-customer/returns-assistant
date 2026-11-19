@@ -1,0 +1,94 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Orion orders API (demo)",
+    "version": "0.1.0",
+    "description": "Demo API for the Refund assistant. No live service answers at this address yet; release checks use sample answers."
+  },
+  "servers": [
+    {
+      "url": "https://orders.example.com/v1"
+    }
+  ],
+  "paths": {
+    "/orders/{orderId}": {
+      "get": {
+        "operationId": "getOrder",
+        "summary": "Look up an order",
+        "description": "Returns the order's status, items, total and whether it can still be refunded.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "The order number the customer gives, such as ORD-10421.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The order.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "placed",
+                        "shipped",
+                        "delivered",
+                        "returned",
+                        "refunded"
+                      ]
+                    },
+                    "placedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "refundable": {
+                      "type": "boolean",
+                      "description": "True while the order is inside the 30-day refund window."
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "sku": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No order with that number."
+          }
+        }
+      }
+    }
+  }
+}

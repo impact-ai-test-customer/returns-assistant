@@ -1,0 +1,91 @@
+{
+  "format": "impact-agent-source/v2",
+  "name": "refund-assistant",
+  "values": [
+    {
+      "key": "model",
+      "part": "model",
+      "label": "Model",
+      "place": "code",
+      "at": "agent/agent.json",
+      "pointer": "/target/development/model"
+    },
+    {
+      "key": "instructions",
+      "part": "instructions",
+      "label": "Instructions",
+      "place": "code",
+      "at": "agent/instructions.md",
+      "pointer": ""
+    },
+    {
+      "key": "rules",
+      "part": "rules",
+      "label": "Rules",
+      "place": "code",
+      "at": "agent/rules.json",
+      "pointer": ""
+    },
+    {
+      "key": "tool.0.0",
+      "part": "tools",
+      "label": "Orion orders API (demo) · getOrder",
+      "place": "code",
+      "at": "agent/agent.json",
+      "pointer": "/tools/0/operations/0/effect"
+    },
+    {
+      "key": "approval.0.0",
+      "part": "approval",
+      "label": "Approval · Orion orders API (demo) · getOrder",
+      "place": "code",
+      "at": "agent/agent.json",
+      "pointer": "/tools/0/operations/0/approvals"
+    },
+    {
+      "key": "limits.tokens",
+      "part": "limits",
+      "label": "Tokens per turn",
+      "place": "code",
+      "at": "agent/agent.json",
+      "pointer": "/limits/tokens",
+      "control": {
+        "kind": "number",
+        "integer": true,
+        "min": 1,
+        "unit": "tokens"
+      }
+    },
+    {
+      "key": "limits.secondsPerTurn",
+      "part": "limits",
+      "label": "Seconds per turn",
+      "place": "code",
+      "at": "agent/agent.json",
+      "pointer": "/limits/secondsPerTurn",
+      "control": {
+        "kind": "number",
+        "integer": true,
+        "min": 1,
+        "unit": "seconds"
+      }
+    }
+  ],
+  "revision": {
+    "attribute": "gen_ai.agent.version",
+    "known": [],
+    "place": "policy",
+    "at": "assigned by your cloud after the Development run",
+    "set": null
+  },
+  "editable": [
+    "agent/agent.json",
+    "agent/instructions.md",
+    "agent/rules.json"
+  ],
+  "required": [],
+  "release": {
+    "pipeline": true,
+    "steps": []
+  }
+}
