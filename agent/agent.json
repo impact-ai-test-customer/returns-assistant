@@ -1,0 +1,68 @@
+{
+  "format": "impact-agent/v1",
+  "source": {
+    "digest": "8a308e7016cbc86930299c14d8f05bd18489ebcf3c585e9feee84acfedc9e97e",
+    "agentId": "agt_6bdae1289569ba62d1ed41f4",
+    "draftNumber": 1
+  },
+  "name": "refund-assistant",
+  "instructions": "instructions.md",
+  "rules": "rules.json",
+  "tools": [
+    {
+      "kind": "openapi",
+      "name": "Orion orders API (demo)",
+      "definition": "tools/tool-0.json",
+      "operations": [
+        {
+          "name": "getOrder",
+          "method": "GET",
+          "path": "/orders/{orderId}",
+          "summary": "Look up an order",
+          "readOnly": null,
+          "approvals": [],
+          "effect": "reads"
+        }
+      ]
+    }
+  ],
+  "target": {
+    "provider": "azure",
+    "development": {
+      "projectId": "/subscriptions/803203a1-abd2-4a68-b527-b6b5dc456c5b/resourceGroups/returnsdemo-development/providers/Microsoft.CognitiveServices/accounts/returnsdemo-development-u4uyimxziykom/projects/development",
+      "endpoint": "https://returnsdemo-development-u4uyimxziykom.services.ai.azure.com/api/projects/development",
+      "model": {
+        "deployment": "customer-agent-model",
+        "name": "gpt-5-mini",
+        "version": "2025-08-07"
+      },
+      "toolConnections": {
+        "Orion orders API (demo)": "/subscriptions/803203a1-abd2-4a68-b527-b6b5dc456c5b/resourceGroups/returnsdemo-development/providers/Microsoft.CognitiveServices/accounts/returnsdemo-development-u4uyimxziykom/projects/development/connections/orion-orders"
+      },
+      "vectorStores": []
+    },
+    "production": {
+      "projectId": "/subscriptions/803203a1-abd2-4a68-b527-b6b5dc456c5b/resourceGroups/returnsdemo-production/providers/Microsoft.CognitiveServices/accounts/returnsdemo-production-uacehnlrhtl7m/projects/production",
+      "endpoint": "https://returnsdemo-production-uacehnlrhtl7m.services.ai.azure.com/api/projects/production",
+      "model": {
+        "deployment": "customer-agent-model",
+        "name": "gpt-5-mini",
+        "version": "2025-08-07"
+      },
+      "toolConnections": {
+        "Orion orders API (demo)": "/subscriptions/803203a1-abd2-4a68-b527-b6b5dc456c5b/resourceGroups/returnsdemo-production/providers/Microsoft.CognitiveServices/accounts/returnsdemo-production-uacehnlrhtl7m/projects/production/connections/orion-orders"
+      },
+      "vectorStores": []
+    }
+  },
+  "limits": {
+    "tokens": 6000,
+    "secondsPerTurn": 30
+  },
+  "modelUpgrade": "disabled",
+  "checks": {
+    "required": true,
+    "digest": "44397c50adb7269d59a53a8a55c6ef3ea41f124bf794f044bd75a0c42bca8f65",
+    "count": 4
+  }
+}
