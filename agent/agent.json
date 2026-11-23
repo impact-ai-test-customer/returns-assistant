@@ -1,7 +1,7 @@
 {
   "format": "impact-agent/v1",
   "source": {
-    "digest": "8a308e7016cbc86930299c14d8f05bd18489ebcf3c585e9feee84acfedc9e97e",
+    "digest": "57fdad106811035aab224d4eb4126ce203cfb7feebcb5324a0acc1c3441ad54c",
     "agentId": "agt_6bdae1289569ba62d1ed41f4",
     "draftNumber": 1
   },
@@ -57,7 +57,7 @@
   },
   "limits": {
     "tokens": 6000,
-    "secondsPerTurn": 30
+    "secondsPerTurn": 45
   },
   "modelUpgrade": "disabled",
   "checks": {
