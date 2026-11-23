@@ -1,0 +1,10 @@
+{
+  "format": "impact-agent-production/v1",
+  "action": "promote",
+  "sourceRunId": 45246738242,
+  "bundleDigest": "d176ff0fe71ff5b7087a30a70d0810f13f6eb4f89c5f2427979923d4dc00b653",
+  "sourceDigest": "5f4616a0403c353f72578527482a48ca30e3bfb974756d735d40eb2c9fbc51e3",
+  "releaseId": "rel_a0621a5b1408da31ac1c2116",
+  "agentName": "impact-82d3feb8af909641348aab73248edbe5",
+  "agentVersion": "2"
+}
