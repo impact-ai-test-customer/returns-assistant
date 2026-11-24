@@ -1,0 +1,227 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.49.2.45890",
+      "templateHash": "15456363552250195123"
+    }
+  },
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 12,
+      "metadata": {
+        "description": "Short lowercase prefix; the resource group is named PREFIX-stack-spike."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "swedencentral"
+    },
+    "githubSubjectPrefix": {
+      "type": "string",
+      "defaultValue": "repo:example-owner/example-repository",
+      "metadata": {
+        "description": "Start of the OIDC subject; the spike deploys the credential and never uses it."
+      }
+    },
+    "githubEnvironment": {
+      "type": "string",
+      "defaultValue": "Development"
+    },
+    "stackName": {
+      "type": "string",
+      "defaultValue": "impact-stack-spike"
+    },
+    "lock": {
+      "type": "string",
+      "defaultValue": "none",
+      "allowedValues": [
+        "none",
+        "denyDelete"
+      ]
+    }
+  },
+  "variables": {
+    "$fxv#0": {
+      "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+      "contentVersion": "1.0.0.0",
+      "metadata": {
+        "_generator": {
+          "name": "bicep",
+          "version": "0.49.2.45890",
+          "templateHash": "9149522110428777197"
+        }
+      },
+      "parameters": {
+        "prefix": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "githubSubjectPrefix": {
+          "type": "string"
+        },
+        "githubEnvironment": {
+          "type": "string",
+          "defaultValue": "Development"
+        }
+      },
+      "variables": {
+        "setupVersion": "0.0.2",
+        "tags": {
+          "impact-setup-version": "[[variables('setupVersion')]"
+        }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Resources/resourceGroups",
+          "apiVersion": "2024-03-01",
+          "name": "[[format('{0}-stack-spike', parameters('prefix'))]",
+          "location": "[[parameters('location')]",
+          "tags": "[[variables('tags')]"
+        },
+        {
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2025-04-01",
+          "name": "[[format('{0}-stack-spike', parameters('prefix'))]",
+          "resourceGroup": "[[format('{0}-stack-spike', parameters('prefix'))]",
+          "properties": {
+            "expressionEvaluationOptions": {
+              "scope": "inner"
+            },
+            "mode": "Incremental",
+            "parameters": {
+              "location": {
+                "value": "[[parameters('location')]"
+              },
+              "githubSubjectPrefix": {
+                "value": "[[parameters('githubSubjectPrefix')]"
+              },
+              "githubEnvironment": {
+                "value": "[[parameters('githubEnvironment')]"
+              },
+              "tags": {
+                "value": "[[variables('tags')]"
+              }
+            },
+            "template": {
+              "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              "contentVersion": "1.0.0.0",
+              "metadata": {
+                "_generator": {
+                  "name": "bicep",
+                  "version": "0.49.2.45890",
+                  "templateHash": "1401177503060012526"
+                }
+              },
+              "parameters": {
+                "location": {
+                  "type": "string"
+                },
+                "githubSubjectPrefix": {
+                  "type": "string"
+                },
+                "githubEnvironment": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "object"
+                }
+              },
+              "resources": [
+                {
+                  "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                  "apiVersion": "2023-01-31",
+                  "name": "spike-identity",
+                  "location": "[[parameters('location')]",
+                  "tags": "[[parameters('tags')]"
+                },
+                {
+                  "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
+                  "apiVersion": "2023-01-31",
+                  "name": "[[format('{0}/{1}', 'spike-identity', 'github-environment')]",
+                  "properties": {
+                    "issuer": "https://token.actions.githubusercontent.com",
+                    "subject": "[[format('{0}:environment:{1}', parameters('githubSubjectPrefix'), parameters('githubEnvironment'))]",
+                    "audiences": [
+                      "api://AzureADTokenExchange"
+                    ]
+                  },
+                  "dependsOn": [
+                    "[[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'spike-identity')]"
+                  ]
+                }
+              ],
+              "outputs": {
+                "identityClientId": {
+                  "type": "string",
+                  "value": "[[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'spike-identity'), '2023-01-31').clientId]"
+                }
+              }
+            }
+          },
+          "dependsOn": [
+            "[[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('{0}-stack-spike', parameters('prefix')))]"
+          ]
+        }
+      ],
+      "outputs": {
+        "setupVersion": {
+          "type": "string",
+          "value": "[[variables('setupVersion')]"
+        }
+      }
+    },
+    "setup": "[variables('$fxv#0')]",
+    "setupVersion": "0.0.2"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deploymentStacks",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('stackName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "impact-setup-version": "[variables('setupVersion')]"
+      },
+      "properties": {
+        "description": "[format('impact.ai deployment stack spike, version {0}.', variables('setupVersion'))]",
+        "template": "[variables('setup')]",
+        "parameters": {
+          "prefix": {
+            "value": "[parameters('prefix')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "githubSubjectPrefix": {
+            "value": "[parameters('githubSubjectPrefix')]"
+          },
+          "githubEnvironment": {
+            "value": "[parameters('githubEnvironment')]"
+          }
+        },
+        "actionOnUnmanage": {
+          "resources": "delete",
+          "resourceGroups": "delete",
+          "managementGroups": "detach"
+        },
+        "denySettings": {
+          "mode": "[parameters('lock')]",
+          "applyToChildScopes": "[not(equals(parameters('lock'), 'none'))]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "setupVersion": {
+      "type": "string",
+      "value": "[variables('setupVersion')]"
+    }
+  }
+}
